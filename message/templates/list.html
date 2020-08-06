@@ -1,0 +1,13 @@
+{% extends 'base.html'%}
+
+{% block content %}
+
+<!--자기 자신을 제외한 모든 유저-->
+    {% for receiver in receivers %}
+        {% if user != receiver %}
+            <a href="{% url 'create_note' receiver.id %}">
+                <p>{{receiver.username}}</p>
+            </a>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,12 @@
+h1{
+    text-align: center;
+    color:skyblue;
+}
+
+a{
+    text-decoration: none !important;
+}
+
+.note_form{
+    border-color: skyblue;
+}

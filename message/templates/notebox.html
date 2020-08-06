@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for note in notes %}
+    <!--보낸 쪽지들만-->
+    {% if user == note.sender %}
+        <a href="{% url 'detail' note.id %}">
+            <p><strong>To.{{note.receiver}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}}</p>
+        </a>
+
+    <!--받은 쪽지들만-->
+    {% else %}
+        <a href="{% url 'detail' note.id %}">
+            <p><strong>From.{{note.sender}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}}</p>
+        </a>
+    {% endif %}    
+{% endfor %}
+       
+<a href="{% url 'home' %}"><button>홈으로</button></a>
+{% endblock %}

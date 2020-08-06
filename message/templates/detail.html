@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <p>
+        {{note_detail.sender}}
+        {{note_detail.send_at}}
+    </p>
+    <p>{{note_detail.content}}</p>
+
+<!-- 로그인한 유저와 해당 쪽지를 보낸 사람이 같으면 보낸 쪽지함으로 가는 버튼이 나타남  -->
+    {% if user == note_detail.sender %}
+        <a href="{% url 'send_notes' %}"><button>보낸 쪽지함</button></a>
+    {% else %}
+        <a href="{% url 'received_notes' %}"><button>받은 쪽지함</button></a>
+    {% endif %}
+
+    <a href="{% url 'delete_note' note_detail.id %}"><button>삭제</button></a>
+
+{% endblock %}
