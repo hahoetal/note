@@ -39,6 +39,11 @@ def received_notes(request):
 # 쪽지 자세히 보기
 def detail(request, note_id):
     note_detail = get_object_or_404(Note, pk=note_id)
+
+    # if request.user == note_detail.recever: sender는 외래키이고, receiver는 아니어서 그런지 이렇게 작성하면 함수가 제대로 작동 안 함.
+    if request.user != note_detail.sender: # 요청한 유저와 쪽지를 보낸 사람이 다르면...   
+        note_detail.is_read = True # 해당 함수가 실행되면 is_read를 True로 변경
+        note_detail.save()
     return render(request, 'detail.html', {'note_detail':note_detail})
 
 # 쪽지 삭제하기
@@ -65,11 +70,5 @@ def delete_note(request, note_detail_id):
                 note.save()
                 return redirect('received_notes')
             note.delete()
-            return redirect('received_notes')
-    
-    
-    
-
-
-
+            return redirect('received_notes')    
 
