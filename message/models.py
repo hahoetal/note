@@ -13,3 +13,10 @@ class Note(models.Model):
     
     def summary(self):
         return self.content[:30]
+
+class ReNote(models.Model):
+    author = models.ForeignKey(User, default="알 수 없음", on_delete=models.SET_DEFAULT)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    content = models.TextField()
+    time = models.DateTimeField(auto_now=True)
+    # is_read = models.BooleanField(default=False)

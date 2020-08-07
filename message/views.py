@@ -1,8 +1,8 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.models import User
-from .models import Note
-from .forms import NoteForm
+from .models import Note, ReNote
+from .forms import NoteForm, ReNoteForm
 
 # 쪽지 작성이 가능한 유저 목록
 def user_list(request):
@@ -39,12 +39,13 @@ def received_notes(request):
 # 쪽지 자세히 보기
 def detail(request, note_id):
     note_detail = get_object_or_404(Note, pk=note_id)
+    renote_form = ReNoteForm()
 
     # if request.user == note_detail.recever: sender는 외래키이고, receiver는 아니어서 그런지 이렇게 작성하면 함수가 제대로 작동 안 함.
     if request.user != note_detail.sender: # 요청한 유저와 쪽지를 보낸 사람이 다르면...   
         note_detail.is_read = True # 해당 함수가 실행되면 is_read를 True로 변경
         note_detail.save()
-    return render(request, 'detail.html', {'note_detail':note_detail})
+    return render(request, 'detail.html', {'note_detail':note_detail, 'renote_form':renote_form})
 
 # 쪽지 삭제하기
 # 쪽지를 받은 사람과 보낸 사람이 모두 삭제한 경우에만 DB에서 삭제
@@ -72,3 +73,15 @@ def delete_note(request, note_detail_id):
             note.delete()
             return redirect('received_notes')    
 
+# 받은 쪽지에 답장 보내기
+def renote(request, note_detail_id):
+    
+    if request.method == "POST":
+        renote_form = ReNoteForm(request.POST)
+
+        if renote_form.is_valid():
+            temp = renote_form.save(commit=False)
+            temp.author = request.user
+            temp.note = Note.objects.get(pk=note_detail_id)
+            temp.save()
+            return redirect('detail', note_detail_id)

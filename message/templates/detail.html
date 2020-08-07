@@ -4,11 +4,11 @@
 
     <p>
         {{note_detail.sender}}
-        {{note_detail.send_at}}
+        {{note_detail.send_at|date:"Y-m-d"}}
     </p>
     <p>{{note_detail.content}}</p>
 
-<!-- 로그인한 유저와 해당 쪽지를 보낸 사람이 같으면 보낸 쪽지함으로 가는 버튼이 나타남  -->
+    <!-- 로그인한 유저와 해당 쪽지를 보낸 사람이 같으면 보낸 쪽지함으로 가는 버튼이 나타남  -->
     {% if user == note_detail.sender %}
         <a href="{% url 'send_notes' %}"><button>보낸 쪽지함</button></a>
     {% else %}
@@ -16,5 +16,20 @@
     {% endif %}
 
     <a href="{% url 'delete_note' note_detail.id %}"><button>삭제</button></a>
+    <br><br>
+
+    <!--해당 쪽지에 대한 답장 목록
+    ReNote가 Note를 외래키로 참조하기 때문에 아래와 같이 작성이 가능-->
+    {% for renote in note_detail.renote_set.all %}
+        <p>{{renote.author}}___{{renote.time}}</p>
+        <p>{{renote.content}} </p>
+    {% endfor %}
+    
+    <!--답장 작성하는 폼-->
+    <form method="POST" action="{% url 'renote' note_detail.id %}">
+        {% csrf_token %}
+        {{renote_form}}
+        <input type="submit" value="답장">
+    </form>
 
 {% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Note
+from .models import Note, ReNote
 
 class NoteForm(forms.ModelForm):
 
@@ -16,3 +16,12 @@ class NoteForm(forms.ModelForm):
         })
 
 
+class ReNoteForm(forms.ModelForm):
+
+    class Meta:
+        model = ReNote
+        fields = ('content',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['content'].label =""
