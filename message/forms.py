@@ -25,3 +25,8 @@ class ReNoteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['content'].label =""
+        
+        self.fields['content'].widget.attrs.update({
+            'class':'re_note_form',
+            'rows':3, 
+        })

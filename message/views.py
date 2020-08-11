@@ -85,3 +85,21 @@ def renote(request, note_detail_id):
             temp.note = Note.objects.get(pk=note_detail_id)
             temp.save()
             return redirect('detail', note_detail_id)
+
+# 상대방이 쪽지를 읽지 않은 경우, 쪽지를 수정
+def update(request, note_detail_id):
+    note = Note.objects.get(pk=note_detail_id)
+    update_form = NoteForm(instance=note) # 수정할 글 담아오기!!
+
+    if not note.is_read:
+        if request.method == 'POST':
+            update_form = NoteForm(request.POST, instance=note) # instance가 빠지면 새로운 글이 생성됨.
+
+            if update_form.is_valid():
+                update_form.save(commit=False)
+                update_form.send_at = timezone.datetime.now()
+                update_form.save()
+                return redirect('detail', note_detail_id)
+    else:
+        pass # 경고창 띄우는 법 생각해보기.. 지금은 모르겠다.
+    return render(request, 'message.html', {'note_form':update_form})
