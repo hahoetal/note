@@ -10,6 +10,8 @@ class Note(models.Model):
     content = models.TextField()
     scount = models.IntegerField(default=0)
     rcount = models.IntegerField(default=0)
+    renotes_s = models.IntegerField(default=0)
+    renotes_r = models.IntegerField(default=0)
     
     def summary(self):
         return self.content[:30]

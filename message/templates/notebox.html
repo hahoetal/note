@@ -7,11 +7,11 @@
     {% if user == note.sender %}
         {% if note.is_read %} <!--쪽지를 읽은 경우-->
             <a href="{% url 'detail' note.id %}">
-                <p>읽음 <strong>To.{{note.receiver}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}}</p>
+                <p>읽음 <strong>To.{{note.receiver}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}} +{{note.renotes_s}}</p>
             </a>
         {% else %} <!--쪽지를 읽지 않은 경우-->
             <a href="{% url 'detail' note.id %}">
-                <p>읽지 않음 <strong>To.{{note.receiver}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}}</p>
+                <p>읽지 않음 <strong>To.{{note.receiver}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}} +{{note.renotes_s}}</p>
             </a>
         {% endif %}
 
@@ -19,11 +19,11 @@
     {% else %}
         {% if note.is_read %} <!--쪽지를 읽은 경우-->
             <a href="{% url 'detail' note.id %}">
-                <p>읽음 <strong>From.{{note.sender}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}}</p>
+                <p>읽음 <strong>From.{{note.sender}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}} +{{note.renotes_r}}</p>
             </a>
         {% else %} <!--쪽지를 읽지 않은 경우-->
             <a href="{% url 'detail' note.id %}">
-                <p>읽지 않음 <strong>From.{{note.sender}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}}</p>
+                <p>읽지 않음 <strong>From.{{note.sender}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}} + {{note.renotes_r}}</p>
             </a>
         {% endif %}
     {% endif %}    
