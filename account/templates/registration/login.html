@@ -1,12 +1,48 @@
 {% extends 'base.html' %}
+
+
+{% block style %}
+    <style>
+        .page{
+            background-color: #fef0ff;
+            height: 65%;
+            width: 80%;
+            margin: 0 auto;
+        }
+        h3{
+            color: #c3bef0;
+            padding-top: 10px;
+            text-align: center;
+        }
+        .btn{
+            text-align: right;
+        }
+        .btn_l{
+            border: none;
+            color: #c471ed;
+            background-color: #fef0ff;
+            font-family: 'CookieRun-Regular';
+            font-size: 16px;
+        }
+        .login_form{
+            margin: 0 40%;
+            font-family: 'CookieRun-Regular';
+        }
+    </style>
+{% endblock%}
+
 {% block content %}
+    <div class="page">
+        <h3>로그인 페이지</h3>
 
-    <h3>로그인 페이지</h3>
-
-    <form method="POST" action="">
-        {% csrf_token %}
-        {{form}}
-        <input type="submit" value="로그인">
-    </form>
-    
+        <div class="login_form">
+            <form method="POST" action="">
+                {% csrf_token %}
+                {{form.as_p}}
+                <div class="btn">
+                    <input type="submit" value="로그인" class="btn_l">
+                </div> 
+            </form>
+        </div>
+    </div>    
 {% endblock %}

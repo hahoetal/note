@@ -6,7 +6,7 @@ class Note(models.Model):
     # 유저 정보가 삭제되더라도 해당 유저가 보낸 쪽지가 삭제되지 않도록 on_delete에 models.SET_DEFAULT를 줌.
     receiver = models.CharField(max_length=100)
     send_at = models.DateTimeField(auto_now=True)
-    is_read = models.BooleanField(default=False)
+    is_read = models.CharField(max_length=10, default="읽지 않음")
     content = models.TextField()
     scount = models.IntegerField(default=0)
     rcount = models.IntegerField(default=0)
@@ -14,6 +14,9 @@ class Note(models.Model):
     renotes_r = models.IntegerField(default=0)
     
     def summary(self):
+        return self.content[:30]
+    
+    def __str__(self):
         return self.content[:30]
 
 class ReNote(models.Model):

@@ -1,11 +1,50 @@
 {% extends 'base.html' %}
+
+{% block style %}
+    <style>
+        .page{
+            background-color: #fef0ff;
+            height: 65%;
+            width: 80%;
+            margin: 0 auto;
+        }
+        h3{
+            color: #c3bef0;
+            padding-top: 10px;
+            text-align: center;
+        }
+        .note_form{
+            border: solid;
+            border-color: #c3bef0;
+            border-radius: 10px;
+            margin: 0 15%;
+            width: 70%;
+            font-family: 'CookieRun-Regular';
+        }
+        input{
+            border: none;
+            color: #c471ed;
+            background-color: #fef0ff;
+            font-family: 'CookieRun-Regular';
+            font-size: 16px;
+        }
+        .note_btn{
+            text-align: right;
+            padding-right: 10%;
+        }
+    </style>
+{% endblock%}
+
 {% block content %}
 
-<div class="note_form">
+<div class="page">
     <form method="POST" action="">
+        <h3>쪽지 작성하기</h3>
         {% csrf_token %}
         {{note_form.as_p}}
-        <input type="submit" value="보내기">
+        <div class="note_btn">
+            <input type="submit" value="보내기">
+        </div> 
     </form>
 </div>
 {% endblock %}

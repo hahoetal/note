@@ -4,6 +4,10 @@ from django.contrib.auth.models import User
 from .models import Note, ReNote
 from .forms import NoteForm, ReNoteForm
 
+# 첫 화면
+def home(request):
+    return render(request, 'home.html')
+
 # 쪽지 작성이 가능한 유저 목록
 def user_list(request):
     receivers = User.objects.all
@@ -19,22 +23,34 @@ def create_note(request, receiver_id):
             temp.sender = request.user
             temp.receiver = get_object_or_404(User, pk=receiver_id).username
             temp.send_at = timezone.datetime.now()
-            temp.is_read = False
+            temp.is_read = "읽지 않음"
             temp.save()
-            return redirect('home')
+            return redirect('box')
 
     note_form = NoteForm
     return render(request, 'message.html', {'note_form':note_form})
 
-# 보낸 쪽지함
-def send_notes(request):
-    notes = Note.objects.filter(sender=request.user).exclude(scount=1)
-    return render(request, 'notebox.html', {'notes':notes})
+# 쪽지함
+def box(request):
+    send_notes = Note.objects.filter(sender=request.user).exclude(scount=1).order_by('send_at') # 보낸 쪽지만
+    receive_notes = Note.objects.filter(receiver=request.user).exclude(rcount=1).order_by('send_at') # 받은 쪽지만
 
-# 받은 쪽지함
-def received_notes(request):
-    notes = Note.objects.filter(receiver=request.user).exclude(rcount=1)
-    return render(request, 'notebox.html', {'notes':notes})
+    send_list = list() # 사용자가 쪽지를 보낸 사람들을 담을 리스트
+    receive_list = list() # 사용자에게 쪽지를 보낸 사람들을 담을 리스트
+
+    for notes in send_notes:
+        send_list.append(notes.receiver) # 사용자가 쪽지를 '보냈던' 사람들의 목록이기 때문에... 'receiver'만 가져와 리스트로 만듦.
+    
+    for notes in receive_notes:
+        receive_list.append(notes.sender) # 사용자가 받은 쪽지를 보낸 사람들의 목록이기 때문에... 'sender'만 가져와 리스트로 만듦.
+
+    send_set = set(send_list) # 중복 제거
+    send_list = list(send_set) # 다시 리스트로 만들기
+
+    recieve_set = set(receive_list)
+    receive_list = list(recieve_set)
+
+    return render(request, 'notebox.html', {'send_notes':send_notes, 'receive_notes':receive_notes, 'send_list':send_list, 'receive_list':receive_list})
 
 # 쪽지 자세히 보기
 def detail(request, note_id):
@@ -43,7 +59,7 @@ def detail(request, note_id):
 
     # if request.user == note_detail.recever: sender는 외래키이고, receiver는 아니어서 그런지 이렇게 작성하면 함수가 제대로 작동 안 함.
     if request.user != note_detail.sender: # 요청한 유저와 쪽지를 보낸 사람이 다르면...   
-        note_detail.is_read = True # 해당 함수가 실행되면 is_read를 True로 변경
+        note_detail.is_read = "읽음" # 해당 함수가 실행되면 is_read를 '읽음'으로 변경
         note_detail.renotes_r = 0
         note_detail.save()
     else:
@@ -59,23 +75,21 @@ def delete_note(request, note_detail_id):
 
     # 로그인한 유저 == 보내는 사람
     if request.user == note.sender:
-        if note.scount == 0:
-            note.scount = 1
-            if note.rcount == 0:
-                note.save()
-                return redirect("send_notes")
-            note.delete()
-            return redirect('send_notes')
+        note.scount = 1
+        if note.rcount == 0:
+            note.save()
+            return redirect('box')
+        note.delete()
+        return redirect('box')
 
     # 로그인한 유저 == 받는 사람    
     else:
-        if note.rcount == 0:
-            note.rcount = 1
-            if note.scount == 0:
-                note.save()
-                return redirect('received_notes')
-            note.delete()
-            return redirect('received_notes')    
+        note.rcount = 1
+        if note.scount == 0:
+            note.save()
+            return redirect('box')
+        note.delete()
+        return redirect('box')    
 
 # 받은 쪽지에 답장 보내기
 def renote(request, note_detail_id):
@@ -99,7 +113,7 @@ def update(request, note_detail_id):
     note = Note.objects.get(pk=note_detail_id)
     update_form = NoteForm(instance=note) # 수정할 글 담아오기!!
 
-    if not note.is_read:
+    if note.is_read == "읽지 않음":
         if request.method == 'POST':
             update_form = NoteForm(request.POST, instance=note) # instance가 빠지면 새로운 글이 생성됨.
 

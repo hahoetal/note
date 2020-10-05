@@ -1,33 +1,121 @@
 {% extends 'base.html' %}
 
+    {% block style %}
+    <style>
+         .box{
+            margin-top:15px;
+            margin-left: 10%;
+            height:80%;
+            display: flex;
+        }
+        .content{
+            background-color:#fef0ff;
+            height: 80%;
+            width: 80%;
+            padding-left: 30px;
+        }
+
+        /*tab menu*/
+        .menu {
+            height: 100px;
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tablinks {
+            float: left;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #fef0ff;
+            background-color: #c3bef0;
+            font-family: 'CookieRun-Regular';
+        }
+
+        .tablinks.active {
+            color: #000;
+            background-color:#fef0ff;
+        }
+        .note_link{
+            color: black;
+            text-decoration: none;
+        }
+        .note_link:hover{
+            color: black;
+            text-decoration: none;
+        }
+        </style>
+    {% endblock %}
+
+    {% block script %}
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent"); // 컨텐츠 불러오기
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none"; // 컨텐츠 모두 숨기기
+            }
+            tablinks = document.getElementsByClassName("tablinks"); // 탭 불러오기
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", ""); // 탭 초기화
+            }
+            document.getElementById(tabName).style.display = "block"; // 해당되는 컨텐츠만 보여주기
+            evt.currentTarget.className += " active"; // 클릭한 탭 활성화
+        }
+    </script>
+{% endblock %}
+
 {% block content %}
 
-{% for note in notes %}
-    <!--보낸 쪽지들만-->
-    {% if user == note.sender %}
-        {% if note.is_read %} <!--쪽지를 읽은 경우-->
-            <a href="{% url 'detail' note.id %}">
-                <p>읽음 <strong>To.{{note.receiver}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}} +{{note.renotes_s}}</p>
-            </a>
-        {% else %} <!--쪽지를 읽지 않은 경우-->
-            <a href="{% url 'detail' note.id %}">
-                <p>읽지 않음 <strong>To.{{note.receiver}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}} +{{note.renotes_s}}</p>
-            </a>
-        {% endif %}
+<div class="box">
+    <div class="menu">
+        <button class="tablinks active" onclick="openTab(event, 'tab1')">받은 쪽지</button>
+        <button class="tablinks" onclick="openTab(event, 'tab2')">보낸 쪽지</button>
+    </div>
 
-    <!--받은 쪽지들만-->
-    {% else %}
-        {% if note.is_read %} <!--쪽지를 읽은 경우-->
-            <a href="{% url 'detail' note.id %}">
-                <p>읽음 <strong>From.{{note.sender}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}} +{{note.renotes_r}}</p>
-            </a>
-        {% else %} <!--쪽지를 읽지 않은 경우-->
-            <a href="{% url 'detail' note.id %}">
-                <p>읽지 않음 <strong>From.{{note.sender}}</strong>{{note.summary}}...{{note.send_at|date:"Y-m-d"}} + {{note.renotes_r}}</p>
-            </a>
-        {% endif %}
-    {% endif %}    
-{% endfor %}
+    <div class="content">
+        <div id="tab1" class="tabcontent" style="display: block;">
+            {% for receive in receive_list %}
+                <p><strong>From.{{receive}}</strong></p>
+                {% for note in receive_notes %}
+                    <!--받은 쪽지-->
+                    {%if note.sender == receive %}
+                        <a href="{% url 'detail' note.id %}" class="note_link">
+                            <p>
+                                {{note.is_read}}  {{note.summary}}...{{note.date|date:"Y-m-d"}} 
+                                {% if note.renotes_r != 0 %}
+                                    + {{note.renotes_r}}
+                                {% endif %}
+                            </p>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <div id="tab2" class="tabcontent" style="display: none;">
+            {% for send in send_list %}
+                <p><strong>To.{{send}}</strong></p>
+                {% for note in send_notes %}
+                    <!--보낸 쪽지-->
+                    {% if note.receiver == send %}
+                        <a href="{% url 'detail' note.id %}" class="note_link">
+                            <p>
+                                {{note.is_read}} &#124; {{note.summary}}...{{note.date|date:"Y-m-d"}} 
+                                {% if note.renotes_s != 0%}
+                                    + {{note.renotes_s}}
+                                {% endif %}
+                            </p>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %} 
+        </div>
+    </div>
+</div>
        
-<a href="{% url 'home' %}"><button>홈으로</button></a>
 {% endblock %}

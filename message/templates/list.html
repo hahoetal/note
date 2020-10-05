@@ -1,13 +1,29 @@
 {% extends 'base.html'%}
 
-{% block content %}
+{% block style %}
+    <style>
+        .page{
+            background-color: #fef0ff;
+            height: 65%;
+            width: 80%;
+            margin: 0 auto;
+        }
+        p{
+            padding-left: 50px;
+        }
+    </style>
+{% endblock%}
 
-<!--자기 자신을 제외한 모든 유저-->
-    {% for receiver in receivers %}
-        {% if user != receiver %}
-            <a href="{% url 'create_note' receiver.id %}">
-                <p>{{receiver.username}}</p>
-            </a>
-        {% endif %}
-    {% endfor %}
+{% block content %}
+    <div class="page">
+        <br>
+        <!--자기 자신을 제외한 모든 유저-->
+        {% for receiver in receivers %}
+            {% if user != receiver %}
+                <a href="{% url 'create_note' receiver.id %}">
+                    <p>{{receiver.username}}</p>
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
 {% endblock %}
